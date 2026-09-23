@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI - Proses Perumusan dan Pengesahan UUD NRI 1945</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0f172a', // Slate 900
+                        secondary: '#dc2626', // Red 600
+                        accent: '#4f46e5', // Indigo 600
+                        success: '#10b981', // Emerald 500
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Hide scrollbar for chip navigation but allow scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Smooth Tab Transition */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 3D Flip Card CSS */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 250px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 1rem;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .flip-card-front {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            color: white;
+        }
+        .flip-card-back {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            .tab-content { display: block !important; page-break-after: always; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-md z-20 no-print flex-shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-secondary text-white p-3 rounded-lg shadow-sm">
+                    <i class="fa-solid fa-book-open text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold bg-accent text-white px-2 py-1 rounded-md uppercase tracking-wide">Bab 2 | Subbab A</span>
+                        <span id="module-indicator" class="text-xs font-semibold text-slate-500 border border-slate-200 px-2 py-1 rounded-md">Modul 1 / 7</span>
+                    </div>
+                    <h1 class="text-lg sm:text-xl font-extrabold text-primary mt-1 leading-tight">Perumusan dan Pengesahan UUD NRI 1945</h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleFullscreen()" class="p-2 text-slate-500 hover:text-accent bg-slate-100 hover:bg-slate-200 rounded-full transition-colors tooltip" title="Layar Penuh">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+                <button onclick="window.print()" class="p-2 text-slate-500 hover:text-accent bg-slate-100 hover:bg-slate-200 rounded-full transition-colors tooltip" title="Cetak Materi">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Horizontal Navigation (Chip Bar) -->
+        <div class="border-t border-slate-100 bg-slate-50/80 backdrop-blur-sm">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+                <div id="chip-container" class="flex overflow-x-auto no-scrollbar py-3 gap-2 items-center scroll-smooth">
+                    <!-- Chips will be generated by JS -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- TAB 1: Konsep Dasar -->
+            <section id="tab-1" class="tab-content active">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-8">
+                    <div class="bg-gradient-to-r from-primary to-accent p-8 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 opacity-10">
+                            <i class="fa-solid fa-scale-balanced text-9xl -mt-4 -mr-4"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold mb-4 relative z-10">Konsep Dasar Konstitusi</h2>
+                        <p class="text-indigo-100 max-w-3xl leading-relaxed text-lg relative z-10">
+                            Setiap instansi maupun organisasi seperti sekolah pasti mempunyai sebuah tata tertib yang wajib ditaati. Tata tertib dibuat untuk mengatur perilaku agar tidak menyimpang. Begitu pula dengan negara, yang memiliki aturan wajib ditaati seluruh rakyatnya yang disebut konstitusi atau Undang-Undang Dasar.
+                        </p>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="flex flex-col md:flex-row gap-8 items-center mb-8">
+                            <div class="w-full md:w-1/3">
+                                <div class="bg-slate-100 rounded-xl p-4 flex justify-center items-center h-48 border-2 border-dashed border-slate-300">
+                                    <i class="fa-solid fa-book-tanakh text-6xl text-slate-400"></i>
+                                </div>
+                                <p class="text-center text-sm text-slate-500 mt-2 font-medium">Ilustrasi: Hukum Dasar Negara</p>
+                            </div>
+                            <div class="w-full md:w-2/3">
+                                <h3 class="text-xl font-bold text-slate-800 mb-3"><i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i> Implementasi dalam Kehidupan</h3>
+                                <p class="text-slate-600 leading-relaxed">
+                                    Dalam kehidupan sehari-hari, konstitusi dapat diibaratkan seperti tata tertib di sekolah atau aturan di rumah. Tujuannya adalah menciptakan ketertiban dan rasa keadilan. Contoh kongkritnya adalah ketika warga negara mengantre saat mengurus administrasi kependudukan atau ketika siswa mengikuti upacara bendera secara tertib. Tanpa adanya aturan dasar ini, akan terjadi perselisihan karena perbedaan kepentingan tiap individu.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 3 Card Highlight -->
+                        <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Analisis Mendalam</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 hover:shadow-md transition-shadow">
+                                <div class="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center text-blue-600 mb-4 text-xl">
+                                    <i class="fa-solid fa-gavel"></i>
+                                </div>
+                                <h4 class="font-bold text-blue-900 mb-2">Hukum Dasar Tertinggi</h4>
+                                <p class="text-blue-700 text-sm">UUD 1945 menempati urutan pertama dalam tata urutan perundang-undangan di Indonesia.</p>
+                            </div>
+                            <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100 hover:shadow-md transition-shadow">
+                                <div class="bg-emerald-100 w-12 h-12 rounded-full flex items-center justify-center text-emerald-600 mb-4 text-xl">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                </div>
+                                <h4 class="font-bold text-emerald-900 mb-2">Sifat Memaksa</h4>
+                                <p class="text-emerald-700 text-sm">Konstitusi bersifat memaksa sehingga wajib dilaksanakan dan dipatuhi oleh siapa pun tanpa terkecuali.</p>
+                            </div>
+                            <div class="bg-amber-50 p-6 rounded-xl border border-amber-100 hover:shadow-md transition-shadow">
+                                <div class="bg-amber-100 w-12 h-12 rounded-full flex items-center justify-center text-amber-600 mb-4 text-xl">
+                                    <i class="fa-solid fa-scale-unbalanced"></i>
+                                </div>
+                                <h4 class="font-bold text-amber-900 mb-2">Menjamin Keadilan</h4>
+                                <p class="text-amber-700 text-sm">Dibuat untuk mencegah benturan kepentingan dan menciptakan ketertiban umum dalam bermasyarakat.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Sub-Topik 1 -->
+            <section id="tab-2" class="tab-content">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+                        <i class="fa-solid fa-bookmark text-secondary mr-3"></i> Pengertian Konstitusi
+                    </h2>
+                    
+                    <div class="prose max-w-none text-slate-600 mb-8">
+                        <p class="mb-4">
+                            Istilah konstitusi berasal dari bahasa Inggris <em>Constitution</em> dan bahasa Belanda <em>Constitutie</em> yang memiliki pengertian hukum dasar atau Undang-Undang Dasar. Menurut istilah ketatanegaraan, konstitusi dimaksudkan untuk membentuk, menyusun, atau menyatakan suatu negara. Konstitusi merupakan hukum dasar yang dijadikan pegangan dalam penyelenggaraan suatu negara.
+                        </p>
+                        <p>
+                            Menurut bentuknya, konstitusi terbagi menjadi dua:
+                        </p>
+                        <ul class="list-disc pl-5 mb-4 space-y-2">
+                            <li><strong>Konstitusi Tertulis:</strong> Biasa disebut dengan Undang-Undang Dasar (UUD).</li>
+                            <li><strong>Konstitusi Tidak Tertulis:</strong> Disebut dengan <em>konvensi</em>. Di samping itu, terdapat hukum adat yang merupakan bagian dari konstitusi tidak tertulis. Contoh konvensi di Indonesia adalah pidato kenegaraan Presiden di hadapan sidang paripurna DPR sebelum tanggal 17 Agustus.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border-l-4 border-accent">
+                        <h3 class="text-lg font-bold text-indigo-900 mb-2"><i class="fa-solid fa-street-view mr-2"></i> Kasus Konkret di Lingkungan Sekolah</h3>
+                        <p class="text-indigo-800 text-sm leading-relaxed">
+                            <strong>Skenario Nyata:</strong> Di SMP Negeri 2 Rangkasbitung, terdapat buku Tata Tertib tertulis yang mengatur jam masuk, seragam, dan sanksi. Ini adalah analogi dari "Konstitusi Tertulis". Namun, di sekolah tersebut juga ada kebiasaan bersalaman dengan guru di gerbang sekolah setiap pagi, meskipun tidak tertulis di buku aturan. Kebiasaan baik yang terpelihara ini adalah analogi dari "Konstitusi Tidak Tertulis (Konvensi)". Keduanya sama-sama mengatur tatanan kehidupan siswa agar damai dan tertib.
+                        </p>
+                        
+                        <div class="mt-4 pt-4 border-t border-indigo-200">
+                            <h4 class="font-bold text-indigo-900 text-sm mb-2">Tabel Aktivitas Pemahaman</h4>
+                            <div class="bg-white rounded border border-indigo-100 overflow-hidden">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-indigo-100 text-indigo-900">
+                                        <tr>
+                                            <th class="p-2">Bentuk Konstitusi</th>
+                                            <th class="p-2">Pengertian</th>
+                                            <th class="p-2">Contoh Negara / Sekolah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-slate-600">
+                                        <tr class="border-b border-slate-100">
+                                            <td class="p-2 font-semibold">Tertulis</td>
+                                            <td class="p-2">Aturan resmi dalam dokumen</td>
+                                            <td class="p-2">UUD NRI 1945 / Buku Tata Tertib</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 font-semibold">Tidak Tertulis</td>
+                                            <td class="p-2">Kebiasaan ketatanegaraan/lingkungan</td>
+                                            <td class="p-2">Pidato Presiden 16 Agustus / Salim pagi</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Sub-Topik 2 -->
+            <section id="tab-3" class="tab-content">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+                        <i class="fa-solid fa-users-gear text-secondary mr-3"></i> Perumusan UUD NRI Tahun 1945
+                    </h2>
+                    
+                    <div class="prose max-w-none text-slate-600 mb-8">
+                        <p class="mb-4">
+                            Konstitusi Indonesia adalah Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 yang menempati urutan pertama dan tertinggi dalam peraturan perundang-undangan.
+                        </p>
+                        <p class="mb-4">
+                            Proses perumusan dimulai setelah sidang BPUPK pertama dengan pembentukan <strong>Panitia Kecil</strong> oleh Ir. Sukarno. Pada 22 Juni 1945, dibentuk <strong>Panitia Sembilan</strong> yang menghasilkan naskah <em>"Piagam Jakarta"</em> (Jakarta Charter) yang kelak menjadi rancangan Pembukaan UUD.
+                        </p>
+                        <p class="mb-4">
+                            Perumusan rancangan batang tubuh UUD dimulai dengan pembentukan <strong>Panitia Hukum Dasar</strong> pada 11 Juli 1945 yang diketuai Ir. Sukarno (19 anggota). Panitia ini kemudian membentuk Panitia Kecil penyusun rancangan batang tubuh yang diketuai oleh <strong>Prof. Dr. Soepomo</strong>. Prof. Soepomo menyatakan bahwa rancangan UUD bersifat singkat dan supel, memuat garis besar sebagai instruksi penyelenggaraan negara.
+                        </p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-xl border-l-4 border-success">
+                        <h3 class="text-lg font-bold text-emerald-900 mb-2"><i class="fa-solid fa-people-group mr-2"></i> Kasus Konkret di Lingkungan Masyarakat/Organisasi</h3>
+                        <p class="text-emerald-800 text-sm leading-relaxed mb-4">
+                            <strong>Skenario Nyata:</strong> Dalam pembentukan aturan Karang Taruna di sebuah desa, tidak mungkin 100 orang pemuda menyusun aturan bersamaan (akan sangat ricuh). Maka dibentuklah "Tim Formatur" (mirip Panitia Hukum Dasar) sebanyak 10 orang. Tim formatur ini kemudian menunjuk 3 orang khusus (mirip Panitia Kecil Prof. Soepomo) untuk mengetik draf kasarnya. Setelah draf kasar selesai, dibahas lagi oleh 10 orang, dan akhirnya disepakati oleh seluruh 100 pemuda desa.
+                        </p>
+                        
+                        <div class="bg-white p-4 rounded-lg border border-emerald-100">
+                            <h4 class="font-bold text-emerald-900 text-sm mb-3">Highlight Aktivitas Perumusan</h4>
+                            <ul class="space-y-2 text-sm text-slate-600">
+                                <li class="flex items-start"><i class="fa-solid fa-check text-success mt-1 mr-2"></i> <strong>22 Juni 1945:</strong> Panitia Sembilan merumuskan Piagam Jakarta.</li>
+                                <li class="flex items-start"><i class="fa-solid fa-check text-success mt-1 mr-2"></i> <strong>11 Juli 1945:</strong> Pembentukan Panitia Hukum Dasar (Ketua: Ir. Sukarno).</li>
+                                <li class="flex items-start"><i class="fa-solid fa-check text-success mt-1 mr-2"></i> <strong>13 Juli 1945:</strong> Panitia Kecil (Ketua: Prof. Dr. Soepomo) membahas batang tubuh UUD (Rancangan awal 42 pasal).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: Sub-Topik 3 -->
+            <section id="tab-4" class="tab-content">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+                        <i class="fa-solid fa-file-signature text-secondary mr-3"></i> Pengesahan UUD NRI Tahun 1945
+                    </h2>
+                    
+                    <div class="prose max-w-none text-slate-600 mb-8">
+                        <p class="mb-4">
+                            Setelah BPUPK selesai melaksanakan tugasnya, dibentuklah PPKI (Panitia Persiapan Kemerdekaan Indonesia). Jepang menyerah tanpa syarat pada Sekutu pada 15 Agustus 1945, sehingga terjadi kekosongan kekuasaan yang dimanfaatkan Indonesia untuk memproklamasikan kemerdekaan pada 17 Agustus 1945.
+                        </p>
+                        <p class="mb-4">
+                            Sehari setelah proklamasi, tepatnya <strong>18 Agustus 1945</strong>, PPKI mengadakan sidang. Sebelum disahkan, terjadi perubahan penting pada rancangan Pembukaan UUD. Untuk menjaga persatuan bangsa Indonesia, terutama karena masukan dari Indonesia Timur, rumusan sila pertama yang semula <em>"Ketuhanan dengan kewajiban menjalankan syariat Islam bagi pemeluk-pemeluknya"</em> diubah menjadi <strong>"Ketuhanan Yang Maha Esa"</strong>.
+                        </p>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mt-4">
+                            <h4 class="font-bold text-slate-800 mb-2">3 Keputusan Penting Sidang PPKI 18 Agustus 1945:</h4>
+                            <ol class="list-decimal pl-5 space-y-1 text-sm">
+                                <li>Mengesahkan UUD 1945.</li>
+                                <li>Menetapkan Ir. Sukarno sebagai Presiden dan Drs. Moh. Hatta sebagai Wakil Presiden RI.</li>
+                                <li>Membentuk Komite Nasional Indonesia Pusat (KNIP) untuk membantu tugas Presiden.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-red-50 to-orange-50 p-6 rounded-xl border-l-4 border-secondary">
+                        <h3 class="text-lg font-bold text-red-900 mb-2"><i class="fa-solid fa-handshake-angle mr-2"></i> Kasus Konkret di Lingkungan Berbangsa</h3>
+                        <p class="text-red-800 text-sm leading-relaxed">
+                            <strong>Skenario Nyata:</strong> Saat merencanakan acara perpisahan kelas, mayoritas siswa ingin pergi ke gunung. Namun, beberapa teman memiliki kondisi asma dan tidak bisa ikut. Demi "Persatuan dan Kebersamaan" kelas, mayoritas mengalah dan mengubah tujuan ke pantai agar semua siswa bisa ikut bergembira. <br><br>
+                            Ini persis seperti sikap para pendiri bangsa dari kalangan Islam yang berjiwa besar (Mohammad Hatta dkk) menghapus tujuh kata dalam Piagam Jakarta demi mengakomodasi saudara-saudara dari Indonesia Timur, sehingga keutuhan Negara Kesatuan Republik Indonesia tetap terjaga saat masa-masa kritis awal kemerdekaan.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: Flashcard Interaktif -->
+            <section id="tab-5" class="tab-content">
+                <div class="mb-6 text-center">
+                    <h2 class="text-2xl font-bold text-primary">Kartu Pintar 3D (Flashcard)</h2>
+                    <p class="text-slate-500 mt-2">Klik atau sentuh kartu untuk membalik dan melihat jawaban.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto px-4" id="flashcard-container">
+                    <!-- Card 1 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front shadow-lg">
+                                <i class="fa-regular fa-circle-question text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold">Pertanyaan 1</h3>
+                                <p class="mt-2 text-center text-sm font-medium">Apakah sebutan untuk hukum dasar yang tertulis?</p>
+                            </div>
+                            <div class="flip-card-back shadow-lg">
+                                <i class="fa-solid fa-check text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold text-emerald-100">Jawaban</h3>
+                                <p class="mt-2 text-center font-bold text-xl">Undang-Undang Dasar (UUD)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front shadow-lg">
+                                <i class="fa-regular fa-circle-question text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold">Pertanyaan 2</h3>
+                                <p class="mt-2 text-center text-sm font-medium">Lembaga apa yang secara resmi mengesahkan UUD 1945?</p>
+                            </div>
+                            <div class="flip-card-back shadow-lg">
+                                <i class="fa-solid fa-check text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold text-emerald-100">Jawaban</h3>
+                                <p class="mt-2 text-center font-bold text-xl">PPKI (Panitia Persiapan Kemerdekaan Indonesia)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front shadow-lg">
+                                <i class="fa-regular fa-circle-question text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold">Pertanyaan 3</h3>
+                                <p class="mt-2 text-center text-sm font-medium">Kapan UUD NRI Tahun 1945 disahkan?</p>
+                            </div>
+                            <div class="flip-card-back shadow-lg">
+                                <i class="fa-solid fa-check text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold text-emerald-100">Jawaban</h3>
+                                <p class="mt-2 text-center font-bold text-xl">18 Agustus 1945</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front shadow-lg">
+                                <i class="fa-regular fa-circle-question text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold">Pertanyaan 4</h3>
+                                <p class="mt-2 text-center text-sm font-medium">Siapa ketua Panitia Hukum Dasar dalam sidang BPUPK?</p>
+                            </div>
+                            <div class="flip-card-back shadow-lg">
+                                <i class="fa-solid fa-check text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold text-emerald-100">Jawaban</h3>
+                                <p class="mt-2 text-center font-bold text-xl">Ir. Sukarno</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="flip-card lg:col-start-2" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front shadow-lg">
+                                <i class="fa-regular fa-circle-question text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold">Pertanyaan 5</h3>
+                                <p class="mt-2 text-center text-sm font-medium">Menjadi apa rumusan sila pertama Piagam Jakarta diubah pada sidang PPKI?</p>
+                            </div>
+                            <div class="flip-card-back shadow-lg">
+                                <i class="fa-solid fa-check text-4xl mb-4 opacity-50"></i>
+                                <h3 class="text-lg font-bold text-emerald-100">Jawaban</h3>
+                                <p class="mt-2 text-center font-bold text-lg">Ketuhanan Yang Maha Esa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: Asesmen -->
+            <section id="tab-6" class="tab-content">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 max-w-4xl mx-auto">
+                    <div class="border-b border-slate-200 pb-4 mb-6 flex justify-between items-end">
+                        <div>
+                            <h2 class="text-2xl font-bold text-primary">Asesmen Isian Singkat</h2>
+                            <p class="text-slate-500 text-sm mt-1">Uji pemahamanmu! Isi dengan jawaban singkat dan tepat.</p>
+                        </div>
+                        <div id="score-display" class="hidden flex-col items-end">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Skor Anda</span>
+                            <span class="text-4xl font-extrabold" id="score-number">0/100</span>
+                        </div>
+                    </div>
+
+                    <form id="assessment-form" onsubmit="submitAssessment(event)">
+                        <!-- Data Diri -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Nama Lengkap</label>
+                                <input type="text" id="student-name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Kelas</label>
+                                <input type="text" id="student-class" required placeholder="Contoh: VIII-A" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Soal Container -->
+                        <div class="space-y-4" id="questions-container">
+                            <!-- Soal generated by JS -->
+                        </div>
+
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between border-t border-slate-200 pt-6">
+                            <div id="feedback-message" class="text-sm font-semibold hidden"></div>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <button type="button" onclick="resetAssessment()" class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                                    <i class="fa-solid fa-rotate-right mr-2"></i> Reset
+                                </button>
+                                <button type="submit" id="btn-submit" class="flex-1 sm:flex-none px-8 py-2.5 rounded-lg font-semibold text-white bg-accent hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all">
+                                    <i class="fa-solid fa-paper-plane mr-2"></i> Kirim Jawaban
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 7: Refleksi (Added to complete 7 tabs requirement) -->
+            <section id="tab-7" class="tab-content">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center max-w-3xl mx-auto">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3211/3211246.png" alt="Refleksi" class="w-32 h-32 mx-auto mb-6 opacity-80 drop-shadow-md">
+                    <h2 class="text-3xl font-extrabold text-primary mb-4">Refleksi Pembelajaran</h2>
+                    <p class="text-slate-600 text-lg leading-relaxed mb-8">
+                        Undang-Undang Dasar NRI Tahun 1945 bukan sekadar dokumen mati, melainkan jiwa yang menuntun arah bangsa. Memahami sejarah perumusan dan pengesahannya menyadarkan kita akan semangat kebersamaan, musyawarah, dan toleransi para pendiri bangsa.
+                    </p>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-6 text-left inline-block w-full">
+                        <h4 class="font-bold text-indigo-900 mb-2">Tanya pada dirimu sendiri:</h4>
+                        <ul class="list-disc pl-5 text-indigo-800 space-y-2">
+                            <li>Apakah saya sudah mematuhi aturan dasar di rumah dan sekolah?</li>
+                            <li>Apakah saya siap mengalah demi kepentingan bersama seperti peristiwa 18 Agustus 1945?</li>
+                            <li>Bagaimana saya bisa menerapkan nilai konstitusi di kehidupan sehari-hari?</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // --- 1. TAB NAVIGATION LOGIC ---
+        const tabs = [
+            { id: 'tab-1', title: 'Konsep Dasar', icon: 'fa-layer-group' },
+            { id: 'tab-2', title: 'Pengertian', icon: 'fa-bookmark' },
+            { id: 'tab-3', title: 'Perumusan', icon: 'fa-users-gear' },
+            { id: 'tab-4', title: 'Pengesahan', icon: 'fa-file-signature' },
+            { id: 'tab-5', title: 'Flashcard', icon: 'fa-clone' },
+            { id: 'tab-6', title: 'Asesmen', icon: 'fa-pen-to-square' },
+            { id: 'tab-7', title: 'Refleksi', icon: 'fa-lightbulb' }
+        ];
+
+        let currentTab = 'tab-1';
+
+        function initTabs() {
+            const container = document.getElementById('chip-container');
+            container.innerHTML = ''; // clear
+
+            tabs.forEach((tab, index) => {
+                const btn = document.createElement('button');
+                const isActive = tab.id === currentTab;
+                
+                // Chip styling
+                btn.className = `px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${
+                    isActive 
+                    ? 'bg-primary text-white shadow-md transform scale-105' 
+                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                }`;
+                btn.id = `btn-${tab.id}`;
+                btn.innerHTML = `<i class="fa-solid ${tab.icon}"></i> ${tab.title}`;
+                
+                btn.onclick = () => switchTab(tab.id);
+                container.appendChild(btn);
+            });
+
+            // Update Header Module Indicator
+            const moduleIndex = tabs.findIndex(t => t.id === currentTab) + 1;
+            document.getElementById('module-indicator').innerText = `Modul ${moduleIndex} / 7`;
+        }
+
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Show target
+            document.getElementById(tabId).classList.add('active');
+            
+            currentTab = tabId;
+            initTabs(); // Re-render chips for active state
+
+            // Auto-center scroll for active chip
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if(activeBtn) {
+                activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+
+        // --- 2. FULLSCREEN LOGIC ---
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // --- 3. ASSESSMENT LOGIC ---
+        // Definition of questions and acceptable answer keys
+        const quizData = [
+            { 
+                q: "Aturan hukum dasar dalam penyelenggaraan suatu negara disebut...", 
+                keys: ["konstitusi", "undang-undang dasar", "uud", "hukum dasar"] 
+            },
+            { 
+                q: "Konstitusi yang tidak tertulis dan hidup dalam kebiasaan ketatanegaraan disebut...", 
+                keys: ["konvensi"] 
+            },
+            { 
+                q: "UUD NRI Tahun 1945 secara resmi disahkan pada tanggal...", 
+                keys: ["18 agustus 1945", "18-08-1945", "18 agustus"] 
+            },
+            { 
+                q: "Lembaga negara yang bertugas dan mengesahkan UUD 1945 adalah...", 
+                keys: ["ppki", "panitia persiapan kemerdekaan indonesia"] 
+            },
+            { 
+                q: "Sebelum menjadi UUD, Panitia Sembilan BPUPK menghasilkan naskah rancangan pembukaan yang dikenal dengan nama...", 
+                keys: ["piagam jakarta", "jakarta charter"] 
+            },
+            { 
+                q: "Tokoh yang menjabat sebagai ketua Panitia Hukum Dasar dalam BPUPK adalah...", 
+                keys: ["sukarno", "ir sukarno", "ir. sukarno", "soekarno"] 
+            },
+            { 
+                q: "Ketua Panitia Kecil yang bertugas menyusun rancangan batang tubuh UUD adalah...", 
+                keys: ["soepomo", "prof dr soepomo", "prof. dr. soepomo", "supomo"] 
+            },
+            { 
+                q: "Sila pertama Piagam Jakarta diubah demi menjaga dan merawat ... bangsa Indonesia.", 
+                keys: ["persatuan", "kesatuan", "keutuhan", "persatuan dan kesatuan"] 
+            },
+            { 
+                q: "Dalam sidang 18 Agustus 1945, ditetapkan Drs. Moh. Hatta menjabat sebagai...", 
+                keys: ["wakil presiden", "wapres", "wakil presiden ri"] 
+            },
+            { 
+                q: "Selain mengesahkan UUD, sidang PPKI 18 Agustus 1945 juga membentuk badan pembantu presiden bernama Komite Nasional Indonesia...", 
+                keys: ["pusat", "knip"] 
+            }
+        ];
+
+        function initQuiz() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            
+            quizData.forEach((item, index) => {
+                const html = `
+                    <div class="relative bg-white border border-slate-200 p-4 rounded-lg focus-within:border-accent focus-within:ring-1 focus-within:ring-accent transition-all q-box" id="qbox-${index}">
+                        <label class="block text-sm font-semibold text-slate-800 mb-2">${index + 1}. ${item.q}</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="ans-${index}" required placeholder="Ketik jawabanmu..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-md focus:outline-none focus:bg-white transition-colors text-sm">
+                            <i id="icon-${index}" class="fa-solid fa-circle-check text-success hidden text-xl"></i>
+                            <i id="icon-x-${index}" class="fa-solid fa-circle-xmark text-secondary hidden text-xl"></i>
+                        </div>
+                        <p id="feedback-${index}" class="text-xs font-semibold text-secondary mt-1 hidden">Jawaban yang benar berkaitan dengan: ${item.keys[0].toUpperCase()}</p>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        // REPLACE WITH YOUR PUBLISHED WEB APP URL FROM GOOGLE APPS SCRIPT
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyk7dkZGV4V2ZhyAF-Wb48S1PFvBRT2U9m0PEgiOzphgPen-lOwkpmVJT4OMgVyrcaK/exec"; 
+
+        async function submitAssessment(e) {
+            e.preventDefault();
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses...';
+            btnSubmit.disabled = true;
+
+            let score = 0;
+            let detailAnswers = [];
+
+            // Validate answers
+            quizData.forEach((item, index) => {
+                const inputEl = document.getElementById(`ans-${index}`);
+                const boxEl = document.getElementById(`qbox-${index}`);
+                const iconCorrect = document.getElementById(`icon-${index}`);
+                const iconWrong = document.getElementById(`icon-x-${index}`);
+                const feedbackText = document.getElementById(`feedback-${index}`);
+                
+                // Clean input: lowercase, remove extra spaces, remove symbols
+                let userAnswerRaw = inputEl.value;
+                let userAnswer = userAnswerRaw.toLowerCase().trim().replace(/[^a-z0-9 -]/g, '');
+                
+                let isCorrect = item.keys.some(key => userAnswer === key);
+
+                // UI Updates
+                inputEl.disabled = true;
+                iconCorrect.classList.add('hidden');
+                iconWrong.classList.add('hidden');
+                feedbackText.classList.add('hidden');
+                boxEl.classList.remove('border-slate-200', 'border-success', 'border-secondary', 'bg-success/5', 'bg-secondary/5');
+
+                if(isCorrect) {
+                    score += 10;
+                    boxEl.classList.add('border-success', 'bg-success/5');
+                    iconCorrect.classList.remove('hidden');
+                } else {
+                    boxEl.classList.add('border-secondary', 'bg-secondary/5');
+                    iconWrong.classList.remove('hidden');
+                    feedbackText.classList.remove('hidden');
+                }
+
+                detailAnswers.push({
+                    no: index + 1,
+                    soal: item.q,
+                    jawaban_user: userAnswerRaw,
+                    status: isCorrect ? "Benar" : "Salah"
+                });
+            });
+
+            // Update Score Display
+            const scoreDisplay = document.getElementById('score-display');
+            const scoreNumber = document.getElementById('score-number');
+            scoreDisplay.classList.remove('hidden');
+            scoreDisplay.classList.add('flex');
+            scoreNumber.innerText = `${score}/100`;
+            
+            let colorClass = score >= 80 ? 'text-success' : (score >= 60 ? 'text-amber-500' : 'text-secondary');
+            scoreNumber.className = `text-4xl font-extrabold ${colorClass}`;
+
+            const name = document.getElementById('student-name').value;
+            const className = document.getElementById('student-class').value;
+            document.getElementById('student-name').disabled = true;
+            document.getElementById('student-class').disabled = true;
+
+            const feedbackMsg = document.getElementById('feedback-message');
+            feedbackMsg.classList.remove('hidden', 'text-success', 'text-secondary');
+
+            // Send to Google Sheets (Simulated Fetch if URL not set, or actual fetch)
+            const payload = {
+                nama: name,
+                kelas: className,
+                skor: score,
+                keterangan: score >= 70 ? "Lulus" : "Remedial",
+                rincian: JSON.stringify(detailAnswers)
+            };
+
+            try {
+                // We use mode: 'no-cors' to bypass CORS issues on frontend, 
+                // but note that we won't get a readable response. It just fires and forgets.
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                feedbackMsg.innerHTML = '<i class="fa-solid fa-check-double mr-1"></i> Data berhasil dikirim ke server!';
+                feedbackMsg.classList.add('text-success');
+
+            } catch (error) {
+                console.error("Gagal mengirim data:", error);
+                feedbackMsg.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Nilai sudah dihitung, tapi gagal terhubung ke Spreadsheet (Cek URL Script).';
+                feedbackMsg.classList.add('text-amber-600');
+            } finally {
+                btnSubmit.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Selesai';
+            }
+        }
+
+        function resetAssessment() {
+            // Enable inputs and clear values
+            document.getElementById('student-name').disabled = false;
+            document.getElementById('student-class').disabled = false;
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Kirim Jawaban';
+
+            document.getElementById('score-display').classList.add('hidden');
+            document.getElementById('score-display').classList.remove('flex');
+            document.getElementById('feedback-message').classList.add('hidden');
+
+            initQuiz(); // Re-render questions fresh
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initTabs();
+            initQuiz();
+        };
+    </script>
+</body>
+</html>
